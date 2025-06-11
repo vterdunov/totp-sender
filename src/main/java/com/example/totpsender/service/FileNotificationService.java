@@ -1,5 +1,6 @@
 package com.example.totpsender.service;
 
+import com.example.totpsender.exception.NotificationException;
 import com.example.totpsender.util.PropertiesLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,7 +45,7 @@ public class FileNotificationService implements NotificationService {
             logger.info("OTP code saved to file for destination: {}", destination);
         } catch (IOException e) {
             logger.error("Failed to save OTP code to file for destination: {}", destination, e);
-            throw new RuntimeException("Failed to save OTP code to file", e);
+            throw new NotificationException("Failed to save OTP code to file", e);
         }
     }
 

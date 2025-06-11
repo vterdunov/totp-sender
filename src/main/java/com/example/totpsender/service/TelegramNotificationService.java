@@ -1,5 +1,6 @@
 package com.example.totpsender.service;
 
+import com.example.totpsender.exception.NotificationException;
 import com.example.totpsender.util.PropertiesLoader;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -47,14 +48,14 @@ public class TelegramNotificationService implements NotificationService {
                 int statusCode = response.getStatusLine().getStatusCode();
                 if (statusCode != 200) {
                     logger.error("Telegram API error. Status code: {}", statusCode);
-                    throw new RuntimeException("Telegram API error: " + statusCode);
+                    throw new NotificationException("Telegram API error: " + statusCode);
                 } else {
                     logger.info("Telegram message sent successfully");
                 }
             }
         } catch (IOException e) {
             logger.error("Error sending Telegram message: {}", e.getMessage(), e);
-            throw new RuntimeException("Failed to send Telegram message", e);
+            throw new NotificationException("Failed to send Telegram message", e);
         }
     }
 

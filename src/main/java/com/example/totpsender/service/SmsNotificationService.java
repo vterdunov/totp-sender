@@ -1,5 +1,6 @@
 package com.example.totpsender.service;
 
+import com.example.totpsender.exception.NotificationException;
 import com.example.totpsender.util.PropertiesLoader;
 import org.jsmpp.bean.*;
 import org.jsmpp.session.SMPPSession;
@@ -55,7 +56,7 @@ public class SmsNotificationService implements NotificationService {
 
         } catch (Exception e) {
             logger.error("Failed to send SMS to: {}", destination, e);
-            throw new RuntimeException("Failed to send SMS", e);
+            throw new NotificationException("Failed to send SMS", e);
         } finally {
             session.unbindAndClose();
         }

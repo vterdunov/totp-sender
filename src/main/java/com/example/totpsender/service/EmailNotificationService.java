@@ -1,5 +1,6 @@
 package com.example.totpsender.service;
 
+import com.example.totpsender.exception.NotificationException;
 import com.example.totpsender.util.PropertiesLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,7 +44,7 @@ public class EmailNotificationService implements NotificationService {
             logger.info("Email with OTP code sent successfully to: {}", destination);
         } catch (MessagingException e) {
             logger.error("Failed to send email to: {}", destination, e);
-            throw new RuntimeException("Failed to send email", e);
+            throw new NotificationException("Failed to send email", e);
         }
     }
 

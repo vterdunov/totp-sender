@@ -3,6 +3,10 @@ package com.example.totpsender.service;
 import com.example.totpsender.dto.AuthResponse;
 import com.example.totpsender.dto.LoginRequest;
 import com.example.totpsender.dto.RegisterRequest;
+import com.example.totpsender.exception.AdminAlreadyExistsException;
+import com.example.totpsender.exception.InvalidCredentialsException;
+import com.example.totpsender.exception.UserAlreadyExistsException;
+import com.example.totpsender.exception.UserNotFoundException;
 import com.example.totpsender.model.User;
 import com.example.totpsender.model.UserRole;
 import com.example.totpsender.repository.UserRepository;
@@ -32,14 +36,14 @@ public class AuthService {
 
         // Check if username already exists
         if (userRepository.findByUsername(request.getUsername()).isPresent()) {
-            throw new RuntimeException("Username already exists: " + request.getUsername());
+            throw new UserAlreadyExistsException("Username already exists: " + request.getUsername());
         }
 
         UserRole role = isAdmin ? UserRole.ADMIN : UserRole.USER;
 
         // Check if admin already exists (only one admin allowed)
         if (role == UserRole.ADMIN && userRepository.existsByRole(UserRole.ADMIN)) {
-            throw new RuntimeException("Admin user already exists. Only one admin is allowed.");
+            throw new AdminAlreadyExistsException("Admin user already exists. Only one admin is allowed.");
         }
 
         // Hash password
@@ -63,7 +67,7 @@ public class AuthService {
         // Find user by username
         Optional<User> userOpt = userRepository.findByUsername(request.getUsername());
         if (userOpt.isEmpty()) {
-            throw new RuntimeException("Invalid username or password");
+            throw new InvalidCredentialsException("Invalid username or password");
         }
 
         User user = userOpt.get();
@@ -71,7 +75,7 @@ public class AuthService {
         // Verify password
         if (!passwordEncoder.matches(request.getPassword(), user.getPasswordHash())) {
             logger.warn("Failed login attempt for user: {}", request.getUsername());
-            throw new RuntimeException("Invalid username or password");
+            throw new InvalidCredentialsException("Invalid username or password");
         }
 
         // Generate JWT token
@@ -100,7 +104,7 @@ public class AuthService {
         // Find user by username
         Optional<User> userOpt = userRepository.findByUsername(username);
         if (userOpt.isEmpty()) {
-            throw new RuntimeException("Invalid username or password");
+            throw new InvalidCredentialsException("Invalid username or password");
         }
 
         User user = userOpt.get();
@@ -108,7 +112,7 @@ public class AuthService {
         // Verify password
         if (!passwordEncoder.matches(password, user.getPasswordHash())) {
             logger.warn("Failed login attempt for user: {}", username);
-            throw new RuntimeException("Invalid username or password");
+            throw new InvalidCredentialsException("Invalid username or password");
         }
 
         // Generate JWT token
@@ -126,7 +130,7 @@ public class AuthService {
     public User findUserByUsername(String username) {
         Optional<User> userOpt = userRepository.findByUsername(username);
         if (userOpt.isEmpty()) {
-            throw new RuntimeException("User not found: " + username);
+            throw new UserNotFoundException("User not found: " + username);
         }
         return userOpt.get();
     }

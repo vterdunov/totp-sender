@@ -1,6 +1,8 @@
 package com.example.totpsender.service;
 
 import com.example.totpsender.dto.UserResponse;
+import com.example.totpsender.exception.AccessDeniedException;
+import com.example.totpsender.exception.UserNotFoundException;
 import com.example.totpsender.model.User;
 import com.example.totpsender.model.UserRole;
 import com.example.totpsender.repository.UserRepository;
@@ -28,7 +30,7 @@ public class UserService {
     public User findByUsername(String username) {
         Optional<User> userOpt = userRepository.findByUsername(username);
         if (userOpt.isEmpty()) {
-            throw new RuntimeException("User not found: " + username);
+            throw new UserNotFoundException("User not found: " + username);
         }
         return userOpt.get();
     }
@@ -36,7 +38,7 @@ public class UserService {
     public User findById(UUID id) {
         Optional<User> userOpt = userRepository.findById(id);
         if (userOpt.isEmpty()) {
-            throw new RuntimeException("User not found with id: " + id);
+            throw new UserNotFoundException("User not found with id: " + id);
         }
         return userOpt.get();
     }
@@ -56,7 +58,7 @@ public class UserService {
 
         // Check if user exists
         if (!userRepository.existsById(userId)) {
-            throw new RuntimeException("User not found with id: " + userId);
+            throw new UserNotFoundException("User not found with id: " + userId);
         }
 
         // Delete associated OTP codes first (cascade delete)
@@ -71,13 +73,13 @@ public class UserService {
 
     public void validateAdminAccess(String role) {
         if (!UserRole.ADMIN.name().equals(role)) {
-            throw new RuntimeException("Access denied. Admin role required.");
+            throw new AccessDeniedException("Access denied. Admin role required.");
         }
     }
 
     public void validateUserAccess(String role) {
         if (!UserRole.USER.name().equals(role) && !UserRole.ADMIN.name().equals(role)) {
-            throw new RuntimeException("Access denied. User role required.");
+            throw new AccessDeniedException("Access denied. User role required.");
         }
     }
 
