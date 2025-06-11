@@ -1,0 +1,18 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /api
+
+spring:
+  application:
+    name: totp-sender
+
+  security:
+    user:
+      name: disabled
+      password: disabled
+
+logging:
+  config: classpath:logback-spring.xml
+  level:
+    com.example.totpsender: DEBUG
