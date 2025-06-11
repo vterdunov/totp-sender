@@ -7,6 +7,7 @@ import com.example.totpsender.repository.OtpCodeRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.sql.DataSource;
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -14,6 +15,7 @@ import java.util.*;
 public class OtpCodeRepositoryImpl implements OtpCodeRepository {
 
     private static final Logger logger = LoggerFactory.getLogger(OtpCodeRepositoryImpl.class);
+    private final DataSource dataSource;
 
     private static final String INSERT_CODE =
         "INSERT INTO otp_codes (id, user_id, code, operation_id, status, created_at, expires_at, used_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
@@ -44,6 +46,10 @@ public class OtpCodeRepositoryImpl implements OtpCodeRepository {
 
     private static final String EXISTS_BY_ID = "SELECT 1 FROM otp_codes WHERE id = ?";
 
+    public OtpCodeRepositoryImpl(DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
+
     @Override
     public OtpCode save(OtpCode otpCode) {
         if (otpCode.getId() == null) {
@@ -55,7 +61,7 @@ public class OtpCodeRepositoryImpl implements OtpCodeRepository {
     }
 
     private OtpCode insert(OtpCode otpCode) {
-        try (Connection conn = DatabaseConfiguration.getDataSource().getConnection();
+        try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(INSERT_CODE)) {
 
             stmt.setObject(1, otpCode.getId());
@@ -87,7 +93,7 @@ public class OtpCodeRepositoryImpl implements OtpCodeRepository {
     }
 
     private OtpCode update(OtpCode otpCode) {
-        try (Connection conn = DatabaseConfiguration.getDataSource().getConnection();
+        try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(UPDATE_CODE)) {
 
             stmt.setObject(1, otpCode.getUserId());
@@ -120,7 +126,7 @@ public class OtpCodeRepositoryImpl implements OtpCodeRepository {
 
     @Override
     public Optional<OtpCode> findById(UUID id) {
-        try (Connection conn = DatabaseConfiguration.getDataSource().getConnection();
+        try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(FIND_BY_ID)) {
 
             stmt.setObject(1, id);
@@ -140,7 +146,7 @@ public class OtpCodeRepositoryImpl implements OtpCodeRepository {
 
     @Override
     public Optional<OtpCode> findByCode(String code) {
-        try (Connection conn = DatabaseConfiguration.getDataSource().getConnection();
+        try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(FIND_BY_CODE)) {
 
             stmt.setString(1, code);
@@ -162,7 +168,7 @@ public class OtpCodeRepositoryImpl implements OtpCodeRepository {
     public List<OtpCode> findByUserIdAndOperationId(UUID userId, String operationId) {
         List<OtpCode> codes = new ArrayList<>();
 
-        try (Connection conn = DatabaseConfiguration.getDataSource().getConnection();
+        try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(FIND_BY_USER_ID_AND_OPERATION_ID)) {
 
             stmt.setObject(1, userId);
@@ -186,7 +192,7 @@ public class OtpCodeRepositoryImpl implements OtpCodeRepository {
     public List<OtpCode> findExpiredCodes() {
         List<OtpCode> codes = new ArrayList<>();
 
-        try (Connection conn = DatabaseConfiguration.getDataSource().getConnection();
+        try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(FIND_EXPIRED_CODES)) {
 
             stmt.setTimestamp(1, Timestamp.valueOf(LocalDateTime.now()));
@@ -209,7 +215,7 @@ public class OtpCodeRepositoryImpl implements OtpCodeRepository {
     public List<OtpCode> findAll() {
         List<OtpCode> codes = new ArrayList<>();
 
-        try (Connection conn = DatabaseConfiguration.getDataSource().getConnection();
+        try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(FIND_ALL);
              ResultSet rs = stmt.executeQuery()) {
 
@@ -227,7 +233,7 @@ public class OtpCodeRepositoryImpl implements OtpCodeRepository {
 
     @Override
     public void updateStatus(UUID id, OtpStatus status) {
-        try (Connection conn = DatabaseConfiguration.getDataSource().getConnection();
+        try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(UPDATE_STATUS)) {
 
             stmt.setString(1, status.name());
@@ -248,7 +254,7 @@ public class OtpCodeRepositoryImpl implements OtpCodeRepository {
 
     @Override
     public void deleteById(UUID id) {
-        try (Connection conn = DatabaseConfiguration.getDataSource().getConnection();
+        try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(DELETE_BY_ID)) {
 
             stmt.setObject(1, id);
@@ -268,7 +274,7 @@ public class OtpCodeRepositoryImpl implements OtpCodeRepository {
 
     @Override
     public void deleteByUserId(UUID userId) {
-        try (Connection conn = DatabaseConfiguration.getDataSource().getConnection();
+        try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(DELETE_BY_USER_ID)) {
 
             stmt.setObject(1, userId);
@@ -284,7 +290,7 @@ public class OtpCodeRepositoryImpl implements OtpCodeRepository {
 
     @Override
     public boolean existsById(UUID id) {
-        try (Connection conn = DatabaseConfiguration.getDataSource().getConnection();
+        try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(EXISTS_BY_ID)) {
 
             stmt.setObject(1, id);

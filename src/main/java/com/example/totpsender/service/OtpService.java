@@ -117,6 +117,12 @@ public class OtpService {
         }
     }
 
+    public void deleteOtpCodesByUserId(java.util.UUID userId) {
+        logger.info("Deleting OTP codes for user: {}", userId);
+        otpCodeRepository.deleteByUserId(userId);
+        logger.info("Successfully deleted OTP codes for user: {}", userId);
+    }
+
     public void validateChannel(String channel) {
         if (channel == null || channel.trim().isEmpty()) {
             throw new IllegalArgumentException("Channel is required");

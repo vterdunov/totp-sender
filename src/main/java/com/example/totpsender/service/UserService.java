@@ -99,10 +99,11 @@ public class UserService {
 
     private UserResponse convertToUserResponse(User user) {
         return new UserResponse(
-            user.getId().toString(),
+            user.getId(),
             user.getUsername(),
             user.getRole().name(),
-            user.getCreatedAt()
+            user.getCreatedAt(),
+            user.getUpdatedAt()
         );
     }
 }

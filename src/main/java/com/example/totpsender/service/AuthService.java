@@ -93,4 +93,41 @@ public class AuthService {
     public String getRoleFromToken(String token) {
         return jwtUtil.getRoleFromToken(token);
     }
+
+    public String login(String username, String password) {
+        logger.info("Attempting to login user: {}", username);
+
+        // Find user by username
+        Optional<User> userOpt = userRepository.findByUsername(username);
+        if (userOpt.isEmpty()) {
+            throw new RuntimeException("Invalid username or password");
+        }
+
+        User user = userOpt.get();
+
+        // Verify password
+        if (!passwordEncoder.matches(password, user.getPasswordHash())) {
+            logger.warn("Failed login attempt for user: {}", username);
+            throw new RuntimeException("Invalid username or password");
+        }
+
+        // Generate JWT token
+        String token = jwtUtil.generateToken(user.getUsername(), user.getRole().name());
+
+        logger.info("Successfully logged in user: {} with role: {}", user.getUsername(), user.getRole());
+
+        return token;
+    }
+
+    public String generateToken(User user) {
+        return jwtUtil.generateToken(user.getUsername(), user.getRole().name());
+    }
+
+    public User findUserByUsername(String username) {
+        Optional<User> userOpt = userRepository.findByUsername(username);
+        if (userOpt.isEmpty()) {
+            throw new RuntimeException("User not found: " + username);
+        }
+        return userOpt.get();
+    }
 }

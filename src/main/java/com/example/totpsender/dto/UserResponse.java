@@ -1,28 +1,31 @@
 package com.example.totpsender.dto;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 public class UserResponse {
-    private String id;
+    private UUID id;
     private String username;
     private String role;
     private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
     public UserResponse() {
     }
 
-    public UserResponse(String id, String username, String role, LocalDateTime createdAt) {
+    public UserResponse(UUID id, String username, String role, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.username = username;
         this.role = role;
         this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
 
-    public String getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 
@@ -48,5 +51,13 @@ public class UserResponse {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }

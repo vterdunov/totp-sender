@@ -6,10 +6,13 @@ public class OtpValidateRequest {
     @NotBlank(message = "Code is required")
     private String code;
 
-    @NotBlank(message = "Operation ID is required")
     private String operationId;
 
     public OtpValidateRequest() {
+    }
+
+    public OtpValidateRequest(String code) {
+        this.code = code;
     }
 
     public OtpValidateRequest(String code, String operationId) {

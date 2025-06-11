@@ -28,6 +28,10 @@ public class OtpConfigService {
         return configOpt.get();
     }
 
+    public OtpConfig getOtpConfig() {
+        return getCurrentConfig();
+    }
+
     public OtpConfig updateConfig(OtpConfigRequest request) {
         logger.info("Updating OTP configuration: length={}, ttl={}",
                    request.getCodeLength(), request.getTtlSeconds());
@@ -54,12 +58,49 @@ public class OtpConfigService {
         return config;
     }
 
+    public OtpConfig updateOtpConfig(int codeLength, int ttlSeconds) {
+        logger.info("Updating OTP configuration: length={}, ttl={}", codeLength, ttlSeconds);
+
+        validateConfig(codeLength, ttlSeconds);
+
+        Optional<OtpConfig> existingConfigOpt = otpConfigRepository.findFirst();
+
+        OtpConfig config;
+        if (existingConfigOpt.isPresent()) {
+            // Update existing config
+            config = existingConfigOpt.get();
+            config.setCodeLength(codeLength);
+            config.setTtlSeconds(ttlSeconds);
+            config.updateTimestamp();
+        } else {
+            // Create new config
+            config = new OtpConfig(codeLength, ttlSeconds);
+        }
+
+        config = otpConfigRepository.save(config);
+
+        logger.info("Successfully updated OTP configuration: length={}, ttl={}",
+                   config.getCodeLength(), config.getTtlSeconds());
+
+        return config;
+    }
+
     public void validateConfig(OtpConfigRequest request) {
         if (request.getCodeLength() < 4 || request.getCodeLength() > 8) {
             throw new IllegalArgumentException("Code length must be between 4 and 8");
         }
 
         if (request.getTtlSeconds() < 30 || request.getTtlSeconds() > 3600) {
+            throw new IllegalArgumentException("TTL must be between 30 and 3600 seconds");
+        }
+    }
+
+    public void validateConfig(int codeLength, int ttlSeconds) {
+        if (codeLength < 4 || codeLength > 8) {
+            throw new IllegalArgumentException("Code length must be between 4 and 8");
+        }
+
+        if (ttlSeconds < 30 || ttlSeconds > 3600) {
             throw new IllegalArgumentException("TTL must be between 30 and 3600 seconds");
         }
     }

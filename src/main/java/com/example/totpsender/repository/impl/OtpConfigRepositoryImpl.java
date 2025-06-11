@@ -6,12 +6,14 @@ import com.example.totpsender.repository.OtpConfigRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.sql.DataSource;
 import java.sql.*;
 import java.util.*;
 
 public class OtpConfigRepositoryImpl implements OtpConfigRepository {
 
     private static final Logger logger = LoggerFactory.getLogger(OtpConfigRepositoryImpl.class);
+    private final DataSource dataSource;
 
     private static final String INSERT_CONFIG =
         "INSERT INTO otp_config (id, code_length, ttl_seconds, created_at, updated_at) VALUES (?, ?, ?, ?, ?)";
@@ -32,6 +34,10 @@ public class OtpConfigRepositoryImpl implements OtpConfigRepository {
 
     private static final String EXISTS_BY_ID = "SELECT 1 FROM otp_config WHERE id = ?";
 
+    public OtpConfigRepositoryImpl(DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
+
     @Override
     public OtpConfig save(OtpConfig config) {
         if (config.getId() == null) {
@@ -43,7 +49,7 @@ public class OtpConfigRepositoryImpl implements OtpConfigRepository {
     }
 
     private OtpConfig insert(OtpConfig config) {
-        try (Connection conn = DatabaseConfiguration.getDataSource().getConnection();
+        try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(INSERT_CONFIG)) {
 
             stmt.setObject(1, config.getId());
@@ -69,7 +75,7 @@ public class OtpConfigRepositoryImpl implements OtpConfigRepository {
     private OtpConfig update(OtpConfig config) {
         config.updateTimestamp();
 
-        try (Connection conn = DatabaseConfiguration.getDataSource().getConnection();
+        try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(UPDATE_CONFIG)) {
 
             stmt.setInt(1, config.getCodeLength());
@@ -93,7 +99,7 @@ public class OtpConfigRepositoryImpl implements OtpConfigRepository {
 
     @Override
     public Optional<OtpConfig> findById(UUID id) {
-        try (Connection conn = DatabaseConfiguration.getDataSource().getConnection();
+        try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(FIND_BY_ID)) {
 
             stmt.setObject(1, id);
@@ -113,7 +119,7 @@ public class OtpConfigRepositoryImpl implements OtpConfigRepository {
 
     @Override
     public Optional<OtpConfig> findFirst() {
-        try (Connection conn = DatabaseConfiguration.getDataSource().getConnection();
+        try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(FIND_FIRST);
              ResultSet rs = stmt.executeQuery()) {
 
@@ -132,7 +138,7 @@ public class OtpConfigRepositoryImpl implements OtpConfigRepository {
     public List<OtpConfig> findAll() {
         List<OtpConfig> configs = new ArrayList<>();
 
-        try (Connection conn = DatabaseConfiguration.getDataSource().getConnection();
+        try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(FIND_ALL);
              ResultSet rs = stmt.executeQuery()) {
 
@@ -150,7 +156,7 @@ public class OtpConfigRepositoryImpl implements OtpConfigRepository {
 
     @Override
     public void deleteById(UUID id) {
-        try (Connection conn = DatabaseConfiguration.getDataSource().getConnection();
+        try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(DELETE_BY_ID)) {
 
             stmt.setObject(1, id);
@@ -170,7 +176,7 @@ public class OtpConfigRepositoryImpl implements OtpConfigRepository {
 
     @Override
     public boolean existsById(UUID id) {
-        try (Connection conn = DatabaseConfiguration.getDataSource().getConnection();
+        try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(EXISTS_BY_ID)) {
 
             stmt.setObject(1, id);

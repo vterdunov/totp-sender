@@ -7,6 +7,7 @@ import com.example.totpsender.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.sql.DataSource;
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -14,6 +15,7 @@ import java.util.*;
 public class UserRepositoryImpl implements UserRepository {
 
     private static final Logger logger = LoggerFactory.getLogger(UserRepositoryImpl.class);
+    private final DataSource dataSource;
 
     private static final String INSERT_USER =
         "INSERT INTO users (id, username, password_hash, role, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)";
@@ -41,6 +43,10 @@ public class UserRepositoryImpl implements UserRepository {
 
     private static final String COUNT_BY_ROLE = "SELECT COUNT(*) FROM users WHERE role = ?";
 
+    public UserRepositoryImpl(DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
+
     @Override
     public User save(User user) {
         if (user.getId() == null) {
@@ -52,7 +58,7 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     private User insert(User user) {
-        try (Connection conn = DatabaseConfiguration.getDataSource().getConnection();
+        try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(INSERT_USER)) {
 
             stmt.setObject(1, user.getId());
@@ -79,7 +85,7 @@ public class UserRepositoryImpl implements UserRepository {
     private User update(User user) {
         user.updateTimestamp();
 
-        try (Connection conn = DatabaseConfiguration.getDataSource().getConnection();
+        try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(UPDATE_USER)) {
 
             stmt.setString(1, user.getUsername());
@@ -104,7 +110,7 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public Optional<User> findById(UUID id) {
-        try (Connection conn = DatabaseConfiguration.getDataSource().getConnection();
+        try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(FIND_BY_ID)) {
 
             stmt.setObject(1, id);
@@ -124,7 +130,7 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public Optional<User> findByUsername(String username) {
-        try (Connection conn = DatabaseConfiguration.getDataSource().getConnection();
+        try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(FIND_BY_USERNAME)) {
 
             stmt.setString(1, username);
@@ -155,7 +161,7 @@ public class UserRepositoryImpl implements UserRepository {
     private List<User> executeQuery(String sql) {
         List<User> users = new ArrayList<>();
 
-        try (Connection conn = DatabaseConfiguration.getDataSource().getConnection();
+        try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
 
@@ -173,7 +179,7 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public void deleteById(UUID id) {
-        try (Connection conn = DatabaseConfiguration.getDataSource().getConnection();
+        try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(DELETE_BY_ID)) {
 
             stmt.setObject(1, id);
@@ -193,7 +199,7 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public boolean existsById(UUID id) {
-        try (Connection conn = DatabaseConfiguration.getDataSource().getConnection();
+        try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(EXISTS_BY_ID)) {
 
             stmt.setObject(1, id);
@@ -210,7 +216,7 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public boolean existsByRole(UserRole role) {
-        try (Connection conn = DatabaseConfiguration.getDataSource().getConnection();
+        try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(EXISTS_BY_ROLE)) {
 
             stmt.setString(1, role.name());
@@ -227,7 +233,7 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public long countByRole(UserRole role) {
-        try (Connection conn = DatabaseConfiguration.getDataSource().getConnection();
+        try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(COUNT_BY_ROLE)) {
 
             stmt.setString(1, role.name());
