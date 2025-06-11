@@ -6,16 +6,16 @@ import java.util.Properties;
 
 public class PropertiesLoader {
 
-    public static Properties loadProperties(String fileName) {
+    public static Properties loadProperties(String filename) {
         Properties properties = new Properties();
-        try (InputStream inputStream = PropertiesLoader.class.getClassLoader()
-                .getResourceAsStream(fileName)) {
-            if (inputStream == null) {
-                throw new RuntimeException("Property file '" + fileName + "' not found in classpath");
+        try (InputStream input = PropertiesLoader.class.getClassLoader()
+                .getResourceAsStream(filename)) {
+            if (input == null) {
+                throw new RuntimeException("Unable to find " + filename);
             }
-            properties.load(inputStream);
+            properties.load(input);
         } catch (IOException e) {
-            throw new RuntimeException("Failed to load properties from " + fileName, e);
+            throw new RuntimeException("Failed to load properties from " + filename, e);
         }
         return properties;
     }
