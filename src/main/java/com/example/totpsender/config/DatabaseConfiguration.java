@@ -25,7 +25,7 @@ public class DatabaseConfiguration {
         return dataSource;
     }
 
-    private static DataSource createDataSource() {
+    public static DataSource createDataSource() {
         logger.info("Initializing database connection pool...");
 
         Properties props = PropertiesLoader.loadProperties("database.properties");

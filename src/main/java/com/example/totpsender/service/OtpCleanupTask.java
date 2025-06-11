@@ -1,6 +1,7 @@
 package com.example.totpsender.service;
 
 import com.example.totpsender.model.OtpCode;
+import com.example.totpsender.model.OtpStatus;
 import com.example.totpsender.repository.OtpCodeRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +30,7 @@ public class OtpCleanupTask implements Runnable {
 
                 // Обновляем статус на EXPIRED
                 for (OtpCode code : expiredCodes) {
-                    otpCodeRepository.updateStatus(code.getId(), OtpCode.Status.EXPIRED);
+                    otpCodeRepository.updateStatus(code.getId(), OtpStatus.EXPIRED);
                 }
 
                 logger.info("Successfully updated {} OTP codes to EXPIRED status", expiredCodes.size());
