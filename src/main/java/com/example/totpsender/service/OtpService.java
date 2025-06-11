@@ -78,11 +78,13 @@ public class OtpService {
             return false;
         }
 
-        // Validate operation ID
-        if (!request.getOperationId().equals(otpCode.getOperationId())) {
-            logger.warn("OTP code operation ID mismatch: expected: {} actual: {}",
-                       request.getOperationId(), otpCode.getOperationId());
-            return false;
+        // Validate operation ID (if provided)
+        if (request.getOperationId() != null && otpCode.getOperationId() != null) {
+            if (!request.getOperationId().equals(otpCode.getOperationId())) {
+                logger.warn("OTP code operation ID mismatch: expected: {} actual: {}",
+                           request.getOperationId(), otpCode.getOperationId());
+                return false;
+            }
         }
 
         // Check if code is active and not expired

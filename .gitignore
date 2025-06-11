@@ -1,3 +1,4 @@
 target/
 .idea/
 *.log
+otp_codes.txt
