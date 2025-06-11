@@ -1,11 +1,8 @@
 package com.example.totpsender.service;
 
 import com.example.totpsender.util.PropertiesLoader;
-import org.opensmpp.Session;
-import org.opensmpp.TCPIPConnection;
-import org.opensmpp.pdu.BindResponse;
-import org.opensmpp.pdu.BindTransmitter;
-import org.opensmpp.pdu.SubmitSM;
+import org.jsmpp.bean.*;
+import org.jsmpp.session.SMPPSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,53 +29,35 @@ public class SmsNotificationService implements NotificationService {
         this.sourceAddress = config.getProperty("smpp.source_addr");
     }
 
-    @Override
+        @Override
     public void sendCode(String destination, String code) {
-        TCPIPConnection connection = null;
-        Session session = null;
+        SMPPSession session = new SMPPSession();
 
         try {
-            connection = new TCPIPConnection(host, port);
-            session = new Session(connection);
+            String systemIdResult = session.connectAndBind(host, port,
+                new org.jsmpp.session.BindParameter(BindType.BIND_TX,
+                    systemId, password, systemType,
+                    TypeOfNumber.UNKNOWN, NumberingPlanIndicator.UNKNOWN, null));
 
-            BindTransmitter bindRequest = new BindTransmitter();
-            bindRequest.setSystemId(systemId);
-            bindRequest.setPassword(password);
-            bindRequest.setSystemType(systemType);
-            bindRequest.setInterfaceVersion((byte) 0x34);
-            bindRequest.setAddressRange(sourceAddress);
+            logger.info("Connected to SMPP server with system ID: {}", systemIdResult);
 
-            BindResponse bindResponse = session.bind(bindRequest);
-            if (bindResponse.getCommandStatus() != 0) {
-                throw new RuntimeException("Bind failed: " + bindResponse.getCommandStatus());
-            }
+            String messageText = "Your code: " + code;
+            session.submitShortMessage("",
+                    TypeOfNumber.UNKNOWN, NumberingPlanIndicator.UNKNOWN, sourceAddress,
+                    TypeOfNumber.UNKNOWN, NumberingPlanIndicator.UNKNOWN, destination,
+                    new ESMClass(), (byte) 0, (byte) 1, null, null,
+                    new RegisteredDelivery(SMSCDeliveryReceipt.DEFAULT),
+                    (byte) 0,
+                    new GeneralDataCoding(Alphabet.ALPHA_DEFAULT, MessageClass.CLASS1, false),
+                    (byte) 0, messageText.getBytes());
 
-            SubmitSM submitSM = new SubmitSM();
-            submitSM.setSourceAddr(sourceAddress);
-            submitSM.setDestAddr(destination);
-            submitSM.setShortMessage("Your code: " + code);
-
-            session.submit(submitSM);
             logger.info("SMS with OTP code sent successfully to: {}", destination);
 
         } catch (Exception e) {
             logger.error("Failed to send SMS to: {}", destination, e);
             throw new RuntimeException("Failed to send SMS", e);
         } finally {
-            if (session != null) {
-                try {
-                    session.close();
-                } catch (Exception e) {
-                    logger.warn("Failed to close SMPP session", e);
-                }
-            }
-            if (connection != null) {
-                try {
-                    connection.close();
-                } catch (Exception e) {
-                    logger.warn("Failed to close SMPP connection", e);
-                }
-            }
+            session.unbindAndClose();
         }
     }
 
