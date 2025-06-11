@@ -4,11 +4,13 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
 import java.util.Properties;
 
+@Component
 public class JwtUtil {
 
     private static final Logger logger = LoggerFactory.getLogger(JwtUtil.class);
@@ -45,9 +47,17 @@ public class JwtUtil {
         return claims.getSubject();
     }
 
+    public String extractUsername(String token) {
+        return getUsernameFromToken(token);
+    }
+
     public String getRoleFromToken(String token) {
         Claims claims = getClaimsFromToken(token);
         return claims.get("role", String.class);
+    }
+
+    public String extractRole(String token) {
+        return getRoleFromToken(token);
     }
 
     public Date getExpirationDateFromToken(String token) {
