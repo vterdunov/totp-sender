@@ -52,7 +52,7 @@ docker run -p 8080:8080 ghcr.io/vterdunov/totp-sender:latest
 mvn clean install
 
 # Запустить базу данных
-docker-compose up -d postgres
+docker compose up -d postgres
 
 # Запустить приложение
 mvn spring-boot:run
