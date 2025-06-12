@@ -1,6 +1,6 @@
 # TOTP Sender
 
-[![CI/CD Pipeline](https://github.com/USERNAME/totp-sender/actions/workflows/ci.yml/badge.svg)](https://github.com/USERNAME/totp-sender/actions/workflows/ci.yml)
+[![CI/CD Pipeline](https://github.com/vterdunov/totp-sender/actions/workflows/ci.yml/badge.svg)](https://github.com/vterdunov/totp-sender/actions/workflows/ci.yml)
 
 Spring Boot приложение для генерации и валидации одноразовых паролей (OTP) с поддержкой различных каналов доставки.
 
@@ -28,7 +28,7 @@ Spring Boot приложение для генерации и валидации
 
 ```bash
 # Клонировать репозиторий
-git clone https://github.com/USERNAME/totp-sender.git
+git clone https://github.com/vterdunov/totp-sender.git
 cd totp-sender
 
 # Запустить PostgreSQL
@@ -42,7 +42,7 @@ mvn spring-boot:run
 
 ```bash
 # Запуск из GitHub Container Registry
-docker run -p 8080:8080 ghcr.io/USERNAME/totp-sender:latest
+docker run -p 8080:8080 ghcr.io/vterdunov/totp-sender:latest
 ```
 
 ### Локальная разработка
