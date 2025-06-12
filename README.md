@@ -32,7 +32,7 @@ git clone https://github.com/vterdunov/totp-sender.git
 cd totp-sender
 
 # Запустить PostgreSQL
-docker-compose up -d
+docker compose up -d
 
 # Собрать и запустить приложение
 mvn spring-boot:run
