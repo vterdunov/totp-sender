@@ -37,10 +37,6 @@ jobs:
 
     - name: Set up environment
       uses: jdx/mise-action@v2
-      with:
-        version: latest
-        install: true
-        cache: true
 
     - name: Cache Maven dependencies
       uses: actions/cache@v4
@@ -64,10 +60,6 @@ jobs:
 
     - name: Set up development environment with mise
       uses: jdx/mise-action@v2
-      with:
-        version: latest
-        install: true
-        cache: true
 
     - name: Cache Maven dependencies
       uses: actions/cache@v4
