@@ -221,6 +221,21 @@ docker build -t totp-sender .
 docker run -p 8080:8080 -e POSTGRES_URL=jdbc:postgresql://host:5432/totp totp-sender
 ```
 
+## CI/CD
+
+### GitHub Actions
+- **Автоматическое тестирование** на каждый push и pull request
+- **Сборка Docker образа** и публикация в GitHub Container Registry
+- **Поддержка PostgreSQL** в тестовой среде
+- **Кэширование Maven зависимостей** для ускорения сборки
+
+### Docker образы
+Образы автоматически публикуются в GitHub Container Registry:
+```bash
+docker pull ghcr.io/vterdunov/totp-sender:latest
+docker pull ghcr.io/vterdunov/totp-sender:main
+```
+
 ## Логирование
 
 Логи записываются в:
