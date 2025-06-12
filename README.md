@@ -120,6 +120,12 @@ GET /api/admin/users
 Authorization: Bearer <admin_jwt_token>
 ```
 
+#### Получение конфигурации OTP
+```http
+GET /api/admin/otp-config
+Authorization: Bearer <admin_jwt_token>
+```
+
 #### Обновление конфигурации OTP
 ```http
 PUT /api/admin/otp-config
@@ -130,6 +136,12 @@ Content-Type: application/json
   "codeLength": 6,
   "ttlSeconds": 300
 }
+```
+
+#### Удаление пользователя
+```http
+DELETE /api/admin/users/{user_id}
+Authorization: Bearer <admin_jwt_token>
 ```
 
 ## Конфигурация каналов

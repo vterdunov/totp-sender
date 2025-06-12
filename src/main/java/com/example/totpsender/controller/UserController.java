@@ -23,7 +23,7 @@ import jakarta.validation.Valid;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/otp")
+@RequestMapping("/user/otp")
 @CrossOrigin(origins = "*")
 public class UserController {
 

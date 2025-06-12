@@ -41,10 +41,7 @@ CREATE INDEX idx_otp_codes_expires_at ON otp_codes(expires_at);
 CREATE INDEX idx_otp_codes_status ON otp_codes(status);
 CREATE INDEX idx_otp_codes_user_id ON otp_codes(user_id);
 
--- Initial data
--- Default admin user (password: admin123, BCrypt hash)
-INSERT INTO users (username, password_hash, role) VALUES
-('admin', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iYqiSfFGjA77pAed3yv5wJZwQ.rq', 'ADMIN');
+-- Initial data will be created through API
 
 -- Default OTP configuration: 6 digits, 5 minutes TTL
 INSERT INTO otp_config (code_length, ttl_seconds) VALUES (6, 300);
